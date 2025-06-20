@@ -1,31 +1,75 @@
 import "./style.css"
-import homePage from "./home"
-import menuPage from "./menu"
-import contactPage from "./contact"
-const menuBtn = document.querySelector("#menu")
-const homeBtn = document.querySelector("#home")
-const contactBtn = document.querySelector("#contact")
-const allBtn = [...document.querySelectorAll("nav button")]
-console.log("My webpack app!")
+// weather API key  CXD4X7736VGC44UCU5HR5T2LB
+const searchForm = document.querySelector("header form")
+const locationInput = document.querySelector("#location")
+async function getLocationWeather(location) {
+    try {
+        const response = await fetch(
+            `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?key=CXD4X7736VGC44UCU5HR5T2LB`
+        )
+        if (!response.ok) {
+            throw new Error(response.status)
+        }
+        return await response.json()
+    } catch (error) {
+        console.log(error.message)
+    }
+}
 
-homePage()
-homeBtn.classList.add("btn-active")
-//menuPage()
-//contactPage()
+ function processWeatherNowData(data) {
+    const { datetime, temp, conditions, feelslike, icon } = data.currentConditions
+    let iconSrc
+    import(`./weatherIcons/${icon}.svg`).then(src => {
+        console.log(src)
+        iconSrc = src.default
+        console.log(iconSrc)
+    })
+    //
+    
+    return {
+        datetime,
+        temp,
+        conditions,
+        feelslike,
+        icon
+    }
+}
 
-menuBtn.addEventListener("click", () => {
-    allBtn.forEach((btn) => btn.classList.remove("btn-active"))
-    menuBtn.classList.add("btn-active")
-    menuPage()
-})
-homeBtn.addEventListener("click", () => {
-    allBtn.forEach((btn) => btn.classList.remove("btn-active"))
-    homeBtn.classList.add("btn-active")
-    homePage()
+ function processWeatherDayData(data, dayIndex) {
+    const {
+        datetime,
+        temp,
+        tempmin,
+        tempmax,
+        feelslike,
+        feelslikemin,
+        feelslikemax,
+        description,
+        conditions,
+        icon,
+    } = data.days[dayIndex]
+
+    return {
+        datetime,
+        temp,
+        tempmin,
+        tempmax,
+        feelslike,
+        feelslikemin,
+        feelslikemax,
+        description,
+        conditions,
+        icon:  icon,
+    }
+}
+
+searchForm.addEventListener("submit", async (e) => {
+    e.preventDefault()
+    const location = locationInput.value
+    const myLocationWeather = await getLocationWeather(location)
+    console.log(processWeatherNowData(myLocationWeather))
+    console.log(processWeatherDayData(myLocationWeather, 0))
+    console.log(processWeatherDayData(myLocationWeather, 1))
 })
 
-contactBtn.addEventListener("click", () => {
-    allBtn.forEach((btn) => btn.classList.remove("btn-active"))
-    contactBtn.classList.add("btn-active")
-    contactPage()
-})
+//console.log(myLocationWeather)
