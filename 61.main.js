@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkrestaurant=self.webpackChunkrestaurant||[]).push([[61],{61:(s,e,t)=>{s.exports=t.p+"fb0c783594fd8102cf86.svg"}}]);
